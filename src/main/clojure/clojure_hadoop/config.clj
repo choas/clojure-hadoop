@@ -82,6 +82,19 @@
       :else
       (.setReducerClass jobconf (Class/forName value)))))
 
+;; The mapper setup function.  Must be a Clojure function as
+;; namespace/symbol.
+(defmethod conf :map-setup [#^JobConf jobconf key value]
+  (let [value (as-str value)]
+    (.set jobconf "clojure-hadoop.job.map.setup" value)))
+
+;; The reducer setup function.  Must be a Clojure function as
+;; namespace/symbol.
+(defmethod conf :reduce-setup [#^JobConf jobconf key value]
+  (let [value (as-str value)]
+    (.set jobconf "clojure-hadoop.job.reduce.setup" value)))
+
+
 ;; The mapper reader function, converts Hadoop Writable types to
 ;; native Clojure types.
 (defmethod conf :map-reader [#^JobConf jobconf key value]
@@ -224,10 +237,12 @@ Other available options are:
  -output-format     Class name or \"text\" or \"seq\" (SeqFile)
  -output-key        Class for job output key
  -output-value      Class for job output value
+ -map-setup         Namespace/name of setup function for mapper
  -map-output-key    Class for intermediate Mapper output key
  -map-output-value  Class for intermediate Mapper output value
  -map-reader        Mapper reader function, as namespace/name
  -map-writer        Mapper writer function, as namespace/name
+ -reduce-setup      Namespace/name of setup function for reducer
  -reduce-reader     Reducer reader function, as namespace/name
  -reduce-writer     Reducer writer function, as namespace/name
  -name              Job name

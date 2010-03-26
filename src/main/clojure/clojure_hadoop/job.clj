@@ -35,6 +35,8 @@
   [type #^JobConf jobconf]
   (alter-var-root (var *jobconf*) (fn [_] jobconf))
   (let [function (load/load-name (.get jobconf (str "clojure-hadoop.job." type)))
+        setup (when-let [v (.get jobconf (str "clojure-hadoop.job." type ".setup"))]
+                (load/load-name v))
         reader (if-let [v (.get jobconf (str "clojure-hadoop.job." type ".reader"))]
                  (load/load-name v)
                  (default-reader type))
@@ -44,7 +46,9 @@
     (assert (fn? function))
     (alter-var-root (ns-resolve (the-ns 'clojure-hadoop.job)
                                 (symbol (method-fn-name type)))
-                    (fn [_] ((wrapper-fn type) function reader writer)))))
+                    (fn [_] ((wrapper-fn type) function reader writer)))
+    (when setup
+      (setup jobconf))))
 
 ;;; CREATING AND CONFIGURING JOBS
 

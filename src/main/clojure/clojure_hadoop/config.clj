@@ -2,7 +2,19 @@
   (:require [clojure-hadoop.imports :as imp]
             [clojure-hadoop.load :as load])
   (:import (org.apache.hadoop.io.compress
-            DefaultCodec GzipCodec LzoCodec)))
+            DefaultCodec GzipCodec LzoCodec))
+  (:import (org.apache.hadoop.fs  Path))
+  (:import (org.apache.hadoop.io  SequenceFile$CompressionType))
+  (:import (org.apache.hadoop.mapred.lib IdentityMapper
+                                         IdentityReducer))
+  (:import (org.apache.hadoop.mapred FileInputFormat
+                                     FileOutputFormat
+                                     SequenceFileInputFormat
+                                     SequenceFileOutputFormat
+                                     KeyValueTextInputFormat
+                                     TextInputFormat
+                                     TextOutputFormat
+                                     JobConf)))
 
 ;; This file defines configuration options for clojure-hadoop.  
 ;;
@@ -19,11 +31,6 @@
 ;; Documentation for individual options appears with each method,
 ;; below.
 
-(imp/import-io)
-(imp/import-fs)
-(imp/import-mapred)
-(imp/import-mapred-lib)
-
 (defn- #^String as-str [s]
   (cond (keyword? s) (name s)
         (class? s) (.getName #^Class s)
@@ -32,10 +39,21 @@
 
 (defmulti conf (fn [jobconf key value] key))
 
+(defmethod conf :gateway-setup [#^JobConf jobconf key value]
+  (println "Calling gateway setup method" value)
+  (let [f (load/load-name value)]
+    (f jobconf)))
+
+
 (defmethod conf :job [jobconf key value]
   (let [f (load/load-name value)]
     (doseq [[k v] (f)]
       (conf jobconf k v))))
+
+
+;; Set the job name
+(defmethod conf :name [#^JobConf jobconf key value]
+  (.setJobName conf (as-str value)))
 
 ;; Job input paths, separated by commas, as a String.
 (defmethod conf :input [#^JobConf jobconf key value]

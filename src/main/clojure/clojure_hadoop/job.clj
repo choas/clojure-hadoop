@@ -4,15 +4,20 @@
             [clojure-hadoop.wrap :as wrap]
             [clojure-hadoop.config :as config]
             [clojure-hadoop.load :as load])
-  (:import (org.apache.hadoop.util Tool)))
+  (:import (org.apache.hadoop.util Tool))
+  (:import (org.apache.hadoop.io  SequenceFile$CompressionType
+                                  Text))
+  (:import (org.apache.hadoop.mapred JobConf
+                                     JobClient
+                                     SequenceFileInputFormat
+                                     SequenceFileOutputFormat
+                                     FileOutputFormat))
+  (:import (org.apache.hadoop.fs FileSystem)))
 
-(imp/import-io)
-(imp/import-io-compress)
-(imp/import-fs)
-(imp/import-mapred)
 
 (gen/gen-job-classes)
 (gen/gen-main-method)
+
 
 (def #^JobConf *jobconf* nil)
 
@@ -34,9 +39,10 @@
   Reducer.configure."
   [type #^JobConf jobconf]
   (alter-var-root (var *jobconf*) (fn [_] jobconf))
-  (let [function (load/load-name (.get jobconf (str "clojure-hadoop.job." type)))
-        setup (when-let [v (.get jobconf (str "clojure-hadoop.job." type ".setup"))]
-                (load/load-name v))
+  (let [setup (when-let [v (.get jobconf (str "clojure-hadoop.job." type ".setup"))]
+                ((load/load-name v) jobconf)
+                true)
+        function (load/load-name (.get jobconf (str "clojure-hadoop.job." type)))
         reader (if-let [v (.get jobconf (str "clojure-hadoop.job." type ".reader"))]
                  (load/load-name v)
                  (default-reader type))
@@ -47,8 +53,7 @@
     (alter-var-root (ns-resolve (the-ns 'clojure-hadoop.job)
                                 (symbol (method-fn-name type)))
                     (fn [_] ((wrapper-fn type) function reader writer)))
-    (when setup
-      (setup jobconf))))
+    ))
 
 ;;; CREATING AND CONFIGURING JOBS
 
@@ -83,8 +88,8 @@
   "Runs a Hadoop job given the JobConf object."
   [jobconf]
   (doto jobconf
-    (handle-replace-option)
-    (JobClient/runJob)))
+    handle-replace-option
+    JobClient/runJob))
 
 
 ;;; MAPPER METHODS

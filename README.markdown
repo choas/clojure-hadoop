@@ -2,11 +2,12 @@ clojure-hadoop
 ==============
 
 About this version:
+
 - forked r0man / clojure-hadoop
 
 - added leiningen support: lein uberjar
 
-- uploaded to clojare
+- uploaded to clojars
 
 - [org.clojars.choas/clojure-hadoop "1.2.0-SNAPSHOT"]
 

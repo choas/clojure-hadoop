@@ -8,7 +8,7 @@ About this version:
 
 - uploaded to clojare
 
-- [org.clojars.choas/clojure-hadoop "1.1.0-SNAPSHOT"]
+- [org.clojars.choas/clojure-hadoop "1.2.0-SNAPSHOT"]
 
 ----
 

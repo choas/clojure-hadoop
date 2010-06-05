@@ -1,4 +1,18 @@
 clojure-hadoop
+==============
+
+About this version:
+- forked r0man / clojure-hadoop
+
+- added leiningen support: lein uberjar
+
+- uploaded to clojare
+
+- [org.clojars.choas/clojure-hadoop "1.1.0-SNAPSHOT"]
+
+----
+
+
 
 A library to assist in writing Hadoop MapReduce jobs in Clojure.
 

@@ -1,1 +1,5 @@
 target
+classes
+lib
+clojure-hadoop*.jar
+pom.xml

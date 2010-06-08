@@ -2,7 +2,7 @@
   (:require [clojure-hadoop.imports :as imp]
             [clojure-hadoop.load :as load])
   (:import (org.apache.hadoop.io.compress
-            DefaultCodec GzipCodec LzoCodec))
+            DefaultCodec GzipCodec BZip2Codec))
   (:import (org.apache.hadoop.fs  Path))
   (:import (org.apache.hadoop.io  SequenceFile$CompressionType))
   (:import (org.apache.hadoop.mapred.lib IdentityMapper
@@ -206,9 +206,9 @@
    (FileOutputFormat/setOutputCompressorClass
     jobconf GzipCodec)
 
-   (= "lzo" (as-str value))
+   (= "bzip2" (as-str value))
    (FileOutputFormat/setOutputCompressorClass
-    jobconf LzoCodec)
+    jobconf BZip2Codec)
 
    :else
    (FileOutputFormat/setOutputCompressorClass
@@ -266,7 +266,7 @@ Other available options are:
  -name              Job name
  -replace           If \"true\", deletes output dir before start
  -compress-output   If \"true\", compress job output files
- -output-compressor Compression class or \"gzip\",\"lzo\",\"default\"
+ -output-compressor Compression class or \"gzip\",\"bzip2\",\"default\"
  -compression-type  For seqfiles, compress \"block\",\"record\",\"none\"
 "))
 

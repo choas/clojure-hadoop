@@ -7,9 +7,9 @@ About this version:
 
 - added leiningen support: lein uberjar
 
-- uploaded to clojars
+- using hadoop 0.20.2
 
-- [org.clojars.choas/clojure-hadoop "1.2.0-SNAPSHOT"]
+- uploaded to clojars: [org.clojars.choas/clojure-hadoop "1.2.1-SNAPSHOT"]
 
 ----
 
